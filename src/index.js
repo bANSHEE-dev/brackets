@@ -1,18 +1,25 @@
 module.exports = function check(str, bracketsConfig) {
-   const open = ['(', '{', '['];
-  const close = [')', '}', ']'];
-  const stack = [];
-  
-  for(let i=0; i < str.length; i++) {
-    if(open.includes(str[i])) {
-    stack.push(str[i]);
-    } else {
-      if(close.indexOf(str[i]) === open.indexOf(stack[stack.length - 1] )){
-        stack.pop();
-      }  else {
+  let bconf = bracketsConfig.reduce(
+    (acc, val) => {
+      acc[val[0]] = val[1];
+      acc[val[1]] = null;
+      return acc;
+    },
+    {}
+  );
+  let stack = [];
+  for (let i = 0; i < str.length; i++) {
+    let char = str[i];
+    if (bconf[char] === null) {
+      if (stack.pop() !== char) {
         return false;
-      } 
+      }
+    } else if (bconf[char] !== undefined) {
+      stack.push(bconf[char]);
     }
-  }   
-  return stack.length === 0;
+  }
+  if (stack.length !== 0) {
+    return false;
+  }
+  return true;
 }
